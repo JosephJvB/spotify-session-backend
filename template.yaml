@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Py Spotty api'
+
+Parameters:
+  DEBUG:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+  JwtSecret:
+    Type: String
+    Default: '{{resolve:ssm:JafJwtSecret:1}}'
+    AllowedValues:
+      - '{{resolve:ssm:JafJwtSecret:1}}'
+  SpotifyClientId:
+    Type: String
+    Default: '{{resolve:ssm:JafSpotifyClientId:1}}'
+    AllowedValues:
+      - '{{resolve:ssm:JafSpotifyClientId:1}}'
+  SpotifyClientSecret:
+    Type: String
+    Default: '{{resolve:ssm:JafSpotifySecret:1}}'
+    AllowedValues:
+      - '{{resolve:ssm:JafSpotifySecret:1}}'
+  # will update this as required
+  SpotifyRedirectUri:
+    Type: String
+    Default: https://jaf-unwrapped.com
+    AllowedValues:
+      - https://jaf-unwrapped.com
+  S3QuizBucket:
+    Type: String
+    Default: jaf-quiz
+    AllowedValues:
+      - jaf-quiz
+  S3QuizPrefix:
+    Type: String
+    Default: spotify-quiz
+    AllowedValues:
+      - spotify-quiz
+  S3QuizFile:
+    Type: String
+    Default: current.json
+    AllowedValues:
+      - current.json
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 128
+    Runtime: python3.9
+    Environment:
+      Variables:
+        DEBUG: !Ref DEBUG
+        JwtSecret: !Ref JwtSecret
+        SpotifyClientId: !Ref SpotifyClientId
+        SpotifyClientSecret: !Ref SpotifyClientSecret
+        SpotifyRedirectUri: !Ref SpotifyRedirectUri
+        S3QuizBucket: !Ref S3QuizBucket
+        S3QuizPrefix: !Ref S3QuizPrefix
+        S3QuizFile: !Ref S3QuizFile
+
+Resources:
+  HttpApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/login.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: JafMembers
+            TableName: SpotifyProfile
+        # - DynamoDBCrudPolicy:
+        #     TableName: !Ref SpotifyProfileTable
+      Events:
+        PostLogin:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsLogin:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
+Outputs:
+  LoginFunction:
+    Description: Python login function
+    Value: !Ref LoginFunction
+  HttpApiGateway:
+    Description: Py Api Gateway
+    Value: !Ref HttpApiGateway

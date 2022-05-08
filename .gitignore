@@ -1,0 +1,4 @@
+.aws-sam
+.env
+.DS_Store
+test.py

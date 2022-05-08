@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aws-lambda-typing = "*"
+requests = "*"
+boto3-type-annotations = "*"
+pyjwt = "*"
+bcrypt = "*"
+
+[dev-packages]
+boto3 = "*"
+
+[requires]
+python_version = "3.9"
