@@ -1,5 +1,6 @@
 import logging
 import json
+import traceback
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
 from clients.ddb import DdbClient
@@ -23,7 +24,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpSuccess()
 
     request: LoginRequest = json.loads(event['body'])
-    print(request)
     required = ['email', 'password']
     missing = [p for p in required if not request[p]]
     if len(missing) > 0:
@@ -69,6 +69,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
   except Exception as e:
     logger.error(e)
-    logger.error(e.with_traceback)
+    logger.error(traceback.format_exc())
     logger.error('handler failed')
     return HttpFailure(str(e))

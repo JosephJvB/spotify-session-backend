@@ -12,13 +12,13 @@ class AuthClient:
   def now(self) -> int:
     return int(datetime.utcnow().timestamp()) * 1000
 
-  def hash_password(self, password: str, salt) -> tuple[str, str]:
+  def hash_password(self, password: str) -> tuple[str, str]:
     salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password, salt)
+    hashed = bcrypt.hashpw(password.encode('utf8'), salt)
     return salt, hashed
 
   def check_password(self, password: str, hash: str) -> bool:
-    return bcrypt.checkpw(password, hash)
+    return bcrypt.checkpw(password.encode('utf8'), hash.encode('utf8'))
 
   def sign_jwt(self, data: dict) -> str:
     return jwt.encode({

@@ -76,9 +76,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: JafMembers
+        - DynamoDBCrudPolicy:
             TableName: SpotifyProfile
-        # - DynamoDBCrudPolicy:
-        #     TableName: !Ref SpotifyProfileTable
       Events:
         PostLogin:
           Type: Api
