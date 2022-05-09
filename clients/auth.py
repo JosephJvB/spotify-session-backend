@@ -2,6 +2,7 @@ import os
 from xmlrpc.client import Boolean
 import jwt
 import bcrypt
+from clients.helpers import now_ts
 
 from models.request import JWT, JWTData
 class AuthClient:
@@ -18,7 +19,10 @@ class AuthClient:
 
   def sign_jwt(self, data: JWTData) -> str:
     return jwt.encode({
-      'data': data
+      'data': {
+        **data,
+        'expires': now_ts() + 1000 * 60 * 60 * 8,
+      }
     }, os.environ.get('JwtSecret'))
 
   def decode_jwt(self, token: str) -> JWT:

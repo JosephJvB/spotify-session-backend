@@ -29,19 +29,19 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     if len(missing) > 0:
       m = 'Invalid request, missing properties ' + missing
       logger.warn(m)
-      return HttpFailure(m)
+      return HttpFailure(400, m)
 
     user: User = ddb.get_user(request['email'])
     if user is None:
       m = 'User not found with email ' + request['email']
       logger.warn(m)
-      return HttpFailure(m)
+      return HttpFailure(400, m)
 
     pw_match = auth.check_password(request['password'], user['hash'])
     if not pw_match:
       m = 'Password does not match'
       logger.warn(m)
-      return HttpFailure(m)
+      return HttpFailure(400, m)
 
     profile: Profile = ddb.get_spotify_profile(user['spotifyId'])
     token: SpotifyToken = json.loads(profile['tokenJson'])
@@ -55,7 +55,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     jwt = auth.sign_jwt({
       'email': user['email'],
-      'spotifyId': user['spotifyId']
+      'spotifyId': user['spotifyId'],
     })
 
     return HttpSuccess(json.dumps({
@@ -71,4 +71,4 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     logger.error(e)
     logger.error(traceback.format_exc())
     logger.error('handler failed')
-    return HttpFailure(str(e))
+    return HttpFailure(500, str(e))

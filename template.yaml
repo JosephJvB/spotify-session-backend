@@ -92,10 +92,35 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  ValidateJWTFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/validate_jwt.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: SpotifyProfile
+      Events:
+        PostLogin:
+          Type: Api
+          Properties:
+            Path: /jwt
+            Method: get
+            RestApiId: !Ref HttpApiGateway
+        OptionsLogin:
+          Type: Api
+          Properties:
+            Path: /jwt
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
 Outputs:
   LoginFunction:
     Description: Python login function
     Value: !Ref LoginFunction
+  ValidateJWTFunction:
+    Description: Python ValidateJWT function
+    Value: !Ref ValidateJWTFunction
   HttpApiGateway:
     Description: Py Api Gateway
     Value: !Ref HttpApiGateway

@@ -21,5 +21,5 @@ class HttpSuccess(HttpResponse):
       super().__init__(200, body)
 
 class HttpFailure(HttpResponse):
-  def __init__(self, body: str = ''):
-      super().__init__(500, body)
+  def __init__(self, code: int = 500, body: str = ''):
+      super().__init__(code, body)
