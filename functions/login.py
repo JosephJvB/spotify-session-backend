@@ -27,7 +27,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     required = ['email', 'password']
     missing = [p for p in required if not request.get(p)]
     if len(missing) > 0:
-      m = 'Invalid request, missing properties ' + missing
+      m = 'Invalid request, missing properties ' + ', '.join(missing)
       logger.warn(m)
       return HttpFailure(400, m)
 
