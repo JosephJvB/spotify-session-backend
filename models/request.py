@@ -9,3 +9,10 @@ class RegisterRequest(TypedDict):
   password: str
   passwordConfirm: str
   spotifyCode: str
+
+class JWTData(TypedDict):
+  email: str
+  spotifyId: str
+  expires: int
+class JWT(TypedDict):
+  data: JWTData
