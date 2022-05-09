@@ -26,8 +26,14 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpFailure(400, m)
     
     decoded = auth.decode_jwt(jwt)
-    if not decoded or not decoded['data']:
+    if not decoded or not decoded.get('data'):
       m = 'Invalid request, jwt invalid'
+      logger.warn(m)
+      return HttpFailure(400, m)
+    required = ['spotifyId', 'email', 'expires']
+    missing = [k for k in required if not decoded['data'].get(k)]
+    if len(missing) > 0:
+      m = 'Invalid request, jwt invalid. Missing properties ' + missing
       logger.warn(m)
       return HttpFailure(400, m)
     if decoded['data']['expires'] < now_ts():

@@ -25,7 +25,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     request: LoginRequest = json.loads(event['body'])
     required = ['email', 'password']
-    missing = [p for p in required if not request[p]]
+    missing = [p for p in required if not request.get(p)]
     if len(missing) > 0:
       m = 'Invalid request, missing properties ' + missing
       logger.warn(m)
@@ -46,7 +46,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     profile: Profile = ddb.get_spotify_profile(user['spotifyId'])
     token: SpotifyToken = json.loads(profile['tokenJson'])
     profile_response: SpotifyProfileResponse = spotify.get_profile(token)
-    img_urls = [i['url'] for i in profile_response['images'] if i['url']]
+    img_urls = [i['url'] for i in profile_response['images'] if i.get('url')]
     if len(img_urls) > 0:
       profile['displayPicture'] = img_urls[0]
 
