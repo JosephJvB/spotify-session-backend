@@ -27,7 +27,6 @@ class SpotifyClient:
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': f'Basic {self.basic_auth}',
     })
-    print(r.text)
     return r.json()
 
   def get_profile(self, token: SpotifyToken):

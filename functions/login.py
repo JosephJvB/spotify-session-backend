@@ -67,8 +67,8 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       'spotifyId': user['spotifyId'],
     }))
 
-  except Exception as e:
-    logger.error(e)
-    logger.error(traceback.format_exc())
+  except Exception:
+    tb = traceback.format_exc()
+    logger.error(tb)
     logger.error('handler failed')
-    return HttpFailure(500, str(e))
+    return HttpFailure(500, tb)
