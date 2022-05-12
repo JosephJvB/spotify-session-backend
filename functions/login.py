@@ -54,6 +54,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     session['userAgent'] = event['requestContext']['identity']['userAgent']
     session['displayName'] = profile.get('displayName')
     session['displayPicture'] = profile.get('displayPicture')
+    session['ts'] = now_ts()
 
     # todo: check if image or access_token has changed, if yes - save, otherwise skip
     ddb.put_session(session)

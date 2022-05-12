@@ -76,6 +76,9 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     session['spotifyId'] = profile['spotifyId']
     session['ipAddress'] = event['requestContext']['identity']['sourceIp']
     session['userAgent'] = event['requestContext']['identity']['userAgent']
+    session['displayName'] = profile.get('displayName')
+    session['displayPicture'] = profile.get('displayPicture')
+    session['ts'] = now_ts()
 
     run_io_tasks_in_parallel([
       lambda: ddb.put_user(user),

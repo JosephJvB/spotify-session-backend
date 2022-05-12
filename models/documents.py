@@ -21,3 +21,4 @@ class Session(TypedDict):
   ipAddress: str
   displayName: str
   displayPicture: str
+  ts: int
