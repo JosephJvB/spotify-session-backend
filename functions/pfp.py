@@ -1,5 +1,6 @@
 from typing import TypedDict
 import boto3
+from boto3_type_annotations.s3 import Client
 import logging
 import requests
 import traceback
@@ -10,7 +11,7 @@ from models.documents import Session
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 ddb = DdbClient()
-s3 = boto3.client('s3')
+s3: Client = boto3.client('s3')
 
 def handler(event: events.DynamoDBStreamEvent, context: context_.Context) -> None:
   try:
@@ -40,7 +41,7 @@ def handler(event: events.DynamoDBStreamEvent, context: context_.Context) -> Non
         ACL='public-read',
         ContentType='image/jpeg'
       )
-      url = f'https://jvb-media/{key}'
+      url = f'https://jvb-media.s3.ap-southeast-2.amazonaws.com/{key}'
       ddb.update_session_pfp(session['sessionId'], url)
       ddb.update_spotify_profile_pfp(session['spotifyId'], url)
 

@@ -69,7 +69,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     if len(img_urls) > 0:
       profile['displayPicture'] = img_urls[0]
 
-    # todo: make persist session optional
     session: Session = {}
     session['sessionId'] = str(uuid4())
     session['email'] = user['email']

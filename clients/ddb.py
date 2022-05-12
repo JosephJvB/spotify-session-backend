@@ -43,9 +43,11 @@ class DdbClient():
       TableName='SpotifyProfile',
       Key={ 'spotifyId': { 'S': id } },
       AttributeUpdates={
-        'displayPicture': { 'S': url }
+        'displayPicture': {
+          'Action': 'PUT',
+          'Value': { 'S': url },
+        }
       },
-      Action='PUT'
     )
 
   def get_session(self, id: str):
@@ -72,9 +74,11 @@ class DdbClient():
       TableName='JafSessions',
       Key={ 'sessionId': { 'S': id } },
       AttributeUpdates={
-        'displayPicture': { 'S': url }
+        'displayPicture': {
+          'Action': 'PUT',
+          'Value': { 'S': url },
+        },
       },
-      Action='PUT'
     )
 
   def to_document(self, obj: dict):
