@@ -168,7 +168,8 @@ Resources:
         DdbStream:
           Type: DynamoDB
           Properties:
-            Stream: arn:aws:dynamodb:ap-southeast-2:355151872526:table/JafSessions/stream/2022-05-12T19:37:18.888
+            Stream: arn:aws:dynamodb:ap-southeast-2:355151872526:table/JafSessions/stream/2022-05-12T20:48:22.277
+            StartingPosition: LATEST
             MaximumRetryAttempts: 0
 
 Outputs:

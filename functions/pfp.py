@@ -19,7 +19,7 @@ def handler(event: events.DynamoDBStreamEvent, context: context_.Context) -> Non
     for record in event['Records']:
       logger.info(record)
       if record['eventName'] == 'INSERT':
-        session: Session = ddb.to_object(record['dynamodb']['Keys'])
+        session: Session = ddb.to_object(record['dynamodb']['NewImage'])
         if session.get('displayPicture'):
           to_download.append(session)
 
@@ -27,7 +27,10 @@ def handler(event: events.DynamoDBStreamEvent, context: context_.Context) -> Non
     if len(to_download) == 0:
       return
 
+    i = 1
     for session in to_download:
+      logger.info(f'download {i} / {len(to_download)}')
+      i += 1
       r = requests.get(session['displayPicture'], stream=True)
       key = 'pfp/' + session['spotifyId'] + '.jpg'
       s3.put_object(

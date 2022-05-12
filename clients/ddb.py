@@ -44,7 +44,8 @@ class DdbClient():
       Key={ 'spotifyId': { 'S': id } },
       AttributeUpdates={
         'displayPicture': { 'S': url }
-      }
+      },
+      Action='PUT'
     )
 
   def get_session(self, id: str):
@@ -72,7 +73,8 @@ class DdbClient():
       Key={ 'sessionId': { 'S': id } },
       AttributeUpdates={
         'displayPicture': { 'S': url }
-      }
+      },
+      Action='PUT'
     )
 
   def to_document(self, obj: dict):
