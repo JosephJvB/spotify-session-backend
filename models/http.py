@@ -25,6 +25,8 @@ class HttpFailure(HttpResponse):
   def __init__(self, code: int = 500, body: str = ''):
       super().__init__(code, body)
 
-class JWT(TypedDict):
+class JWTData(TypedDict):
   expires: int
   spotifyId: str
+class JWT(TypedDict):
+  data: JWTData
