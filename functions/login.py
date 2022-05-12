@@ -76,12 +76,12 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
         'sessionId': session['sessionId']
       })
     ])
-    jwt, rememberme = tokens
+    jwt, session_token = tokens
 
     return HttpSuccess(json.dumps({
       'message': 'Login success',
       'token': jwt,
-      'sessionToken': rememberme,
+      'sessionToken': session_token,
       'email': user['email'],
       'displayPicture': profile.get('displayPicture'),
       'displayName': profile.get('displayName'),

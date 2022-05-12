@@ -94,35 +94,13 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
-  ValidateJWTFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: .
-      Handler: functions/validate_jwt.handler
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: SpotifyProfile
-      Events:
-        GetValidateJwt:
-          Type: Api
-          Properties:
-            Path: /jwt
-            Method: get
-            RestApiId: !Ref HttpApiGateway
-        OptionsValidateJwt:
-          Type: Api
-          Properties:
-            Path: /jwt
-            Method: options
-            RestApiId: !Ref HttpApiGateway
-
   RegisterFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
       Handler: functions/register.handler
       Policies:
-      - DynamoDBCrudPolicy:
+        - DynamoDBCrudPolicy:
             TableName: JafSessions
         - DynamoDBCrudPolicy:
             TableName: JafMembers
@@ -142,7 +120,7 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
-  RememberMeFunction:
+  SessionFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
@@ -155,16 +133,16 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: SpotifyProfile
       Events:
-        GetRememberMe:
+        GetSession:
           Type: Api
           Properties:
-            Path: /rememberme
+            Path: /session
             Method: get
             RestApiId: !Ref HttpApiGateway
-        OptionsRememberMe:
+        OptionsSession:
           Type: Api
           Properties:
-            Path: /rememberme
+            Path: /session
             Method: options
             RestApiId: !Ref HttpApiGateway
 
@@ -172,15 +150,12 @@ Outputs:
   LoginFunction:
     Description: Python login function
     Value: !Ref LoginFunction
-  ValidateJWTFunction:
-    Description: Python ValidateJWT function
-    Value: !Ref ValidateJWTFunction
   RegisterFunction:
     Description: Python Register function
     Value: !Ref RegisterFunction
-  RememberMeFunction:
-    Description: Python RememberMe function
-    Value: !Ref RememberMeFunction
+  SessionFunction:
+    Description: Python Session function
+    Value: !Ref SessionFunction
   HttpApiGateway:
     Description: Py Api Gateway
     Value: !Ref HttpApiGateway
