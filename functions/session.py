@@ -30,8 +30,8 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       m = 'Invalid request, jwt invalid'
       logger.warn(m)
       return HttpFailure(400, m)
-    if not decoded.get('sessionId'):
-      m = 'Invalid request, jwt invalid. Missing sessionId'
+    if not decoded.get('spotifyId'):
+      m = 'Invalid request, jwt invalid. Missing spotifyId'
       logger.warn(m)
       return HttpFailure(400, m)
     if now_ts() > decoded.get('expires'):
@@ -41,7 +41,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     profile: Profile = ddb.get_spotify_profile(decoded['spotifyId'])
     if not profile:
-      m = 'Invalid request, profile not found with id ' + decoded['sessionId']
+      m = 'Invalid request, profile not found with id ' + decoded['spotifyId']
       logger.warn(m)
       return HttpFailure(400, m)
 

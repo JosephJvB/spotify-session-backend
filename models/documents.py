@@ -5,6 +5,6 @@ class Profile(TypedDict):
   tokenJson: str
   displayName: str
   displayPicture: str
-  created: int
   userAgent: str
   ipAddress: str
+  lastLogin: int

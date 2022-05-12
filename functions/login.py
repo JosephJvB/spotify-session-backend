@@ -29,15 +29,17 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpFailure(400, m)
 
     spotify_token: SpotifyTokenResponse = spotify.submit_code(code)
+    spotify_token['ts'] = now_ts()
     spotify_profile: SpotifyProfileResponse = spotify.get_profile(spotify_token)
 
     profile: Profile = {}
     profile['spotifyId'] = spotify_profile['id']
+    profile['tokenJson'] = json.dumps(spotify_token)
     profile['ipAddress'] = event['requestContext']['identity']['sourceIp']
     profile['userAgent'] = event['requestContext']['identity']['userAgent']
     profile['displayName'] = spotify_profile['display_name']
     profile['displayPicture'] = next(i.get('url') for i in spotify_profile['images'] if i.get('url'))
-    profile['created'] = now_ts()
+    profile['lastLogin'] = now_ts()
     ddb.put_spotify_profile(profile)
 
     jwt = auth.sign_jwt({
