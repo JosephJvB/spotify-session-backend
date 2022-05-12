@@ -46,25 +46,17 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpFailure(400, m)
 
     profile: Profile = ddb.get_spotify_profile(user['spotifyId'])
-    token: SpotifyToken = json.loads(profile['tokenJson'])
-    profile_response: SpotifyProfileResponse = spotify.get_profile(token)
-    img_urls = [i['url'] for i in profile_response['images'] if i.get('url')]
-    if len(img_urls) > 0:
-      profile['displayPicture'] = img_urls[0]
-
     # todo: make persist session optional
     session: Session = {}
-    session['sessionId'] = uuid4()
-    session['email'] = user['email']
+    session['sessionId'] = str(uuid4())
     session['spotifyId'] = profile['spotifyId']
     session['ipAddress'] = event['requestContext']['identity']['sourceIp']
     session['userAgent'] = event['requestContext']['identity']['userAgent']
+    session['displayName'] = profile.get('displayName')
+    session['displayPicture'] = profile.get('displayPicture')
 
     # todo: check if image or access_token has changed, if yes - save, otherwise skip
-    run_io_tasks_in_parallel([
-      lambda: ddb.put_spotify_profile(profile),
-      lambda: ddb.put_session(session),
-    ])
+    lambda: ddb.put_session(session),
 
     tokens = run_io_tasks_in_parallel([
       lambda: auth.sign_jwt({
@@ -82,7 +74,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       'message': 'Login success',
       'token': jwt,
       'sessionToken': session_token,
-      'email': user['email'],
       'displayPicture': profile.get('displayPicture'),
       'displayName': profile.get('displayName'),
       'spotifyId': user['spotifyId'],

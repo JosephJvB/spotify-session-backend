@@ -39,7 +39,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       logger.warn(m)
       return HttpFailure(400, m)
 
-    # get display name and picture
     session: Session = ddb.get_session(decoded['data']['sessionId'])
     if not session:
       m = 'Invalid request, session not found with id ' + decoded['data']['sessionId']
@@ -48,34 +47,22 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     ip = event['requestContext']['identity']['sourceIp']
     ua = event['requestContext']['identity']['userAgent']
-    if session['ip_address'] != ip or session['userAgent'] != ua:
+    if session['ipAddress'] != ip or session['userAgent'] != ua:
       m = 'Invalid request, ip or user agent do not match session'
       logger.warn(m)
       return HttpFailure(400, m)
 
-    results: list[User, Profile] = run_io_tasks_in_parallel([
-      lambda: ddb.get_user(session['email']),
-      lambda: ddb.get_spotify_profile(session['spotifyId']),
-    ])
-    user, profile = results
-    if not user or not profile:
-      m = 'Failed to find user or profile for session'
-      logger.warn(m)
-      ddb.delete_session(session['sessionId'])
-      return HttpFailure(400, m)
-    
     jwt = auth.sign_jwt({
-      'email': decoded['data']['email'],
-      'spotifyId': decoded['data']['spotifyId'],
+      'email': session['email'],
+      'spotifyId': session['spotifyId'],
     })
 
     return HttpSuccess(json.dumps({
       'message': 'ValidateJwt success',
       'token': jwt,
-      'email': decoded['data']['email'],
-      'spotifyId': decoded['data']['spotifyId'],
-      'displayPicture': profile['displayPicture'],
-      'displayName': profile['displayName'],
+      'spotifyId': session['spotifyId'],
+      'displayPicture': session['displayPicture'],
+      'displayName': session['displayName'],
     }))
 
   except Exception:

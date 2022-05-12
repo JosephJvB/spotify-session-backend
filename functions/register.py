@@ -71,7 +71,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     # todo: make persist session optional
     session: Session = {}
-    session['sessionId'] = uuid4()
+    session['sessionId'] = str(uuid4())
     session['email'] = user['email']
     session['spotifyId'] = profile['spotifyId']
     session['ipAddress'] = event['requestContext']['identity']['sourceIp']

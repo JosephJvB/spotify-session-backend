@@ -19,3 +19,5 @@ class Session(TypedDict):
   spotifyId: str
   userAgent: str
   ipAddress: str
+  displayName: str
+  displayPicture: str

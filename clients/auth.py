@@ -12,7 +12,7 @@ class AuthClient:
   def hash_password(self, password: str) -> tuple[str, str]:
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode('utf8'), salt)
-    return salt, hashed
+    return salt.decode('utf8'), hashed.decode('utf8')
 
   def check_password(self, password: str, hash: str) -> bool:
     return bcrypt.checkpw(password.encode('utf8'), hash.encode('utf8'))

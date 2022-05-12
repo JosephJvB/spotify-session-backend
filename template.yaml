@@ -124,7 +124,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
-      Handler: functions/remember_me.handler
+      Handler: functions/session.handler
       Policies:
         - DynamoDBCrudPolicy:
             TableName: JafSessions
