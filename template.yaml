@@ -114,6 +114,30 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  RegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/register.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: JafMembers
+        - DynamoDBCrudPolicy:
+            TableName: SpotifyProfile
+      Events:
+        PostRegister:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+            RestApiId: !Ref HttpApiGateway
+        OptionsRegister:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
 Outputs:
   LoginFunction:
     Description: Python login function
@@ -121,6 +145,9 @@ Outputs:
   ValidateJWTFunction:
     Description: Python ValidateJWT function
     Value: !Ref ValidateJWTFunction
+  RegisterFunction:
+    Description: Python Register function
+    Value: !Ref RegisterFunction
   HttpApiGateway:
     Description: Py Api Gateway
     Value: !Ref HttpApiGateway

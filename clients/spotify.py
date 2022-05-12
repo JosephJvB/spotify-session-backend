@@ -12,6 +12,17 @@ class SpotifyClient:
     auth_str = f"{os.environ.get('SpotifyClientId')}:{os.environ.get('SpotifyClientSecret')}"
     self.basic_auth = b64encode(auth_str.encode()).decode()
 
+  def submit_code(self, code: str) -> SpotifyToken:
+    r = requests.post('https://accounts.spotify.com/api/token', params={
+        'code': code,
+        'grant_type': 'authorization_code',
+        'redirect_uri': os.environ.get('SpotifyRedirectUri')
+    }, headers={
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': f'Basic {self.basic_auth}',
+    })
+    return r.json()
+
   def validate_token(self, token: SpotifyToken):
     now = now_ts()
     if now > token['ts'] + token['expires_in'] * 1000:

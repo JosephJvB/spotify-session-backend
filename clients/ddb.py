@@ -2,7 +2,7 @@ import boto3
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from boto3_type_annotations.dynamodb import Client
 
-from models.documents import Profile
+from models.documents import Profile, User
 
 class DdbClient():
   client: Client
@@ -19,6 +19,12 @@ class DdbClient():
       Key={ 'email': { 'S': email } }
     )
     return self.to_object(r.get('Item'))
+
+  def put_user(self, user: User):
+    return self.client.put_item(
+      TableName='JafMembers',
+      Item=self.to_document(user)
+    )
   
   def get_spotify_profile(self, id: str):
     r = self.client.get_item(
