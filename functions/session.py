@@ -53,7 +53,6 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpFailure(400, m)
 
     jwt = auth.sign_jwt({
-      'email': session['email'],
       'spotifyId': session['spotifyId'],
     })
 

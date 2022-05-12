@@ -56,7 +56,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     session['displayPicture'] = profile.get('displayPicture')
 
     # todo: check if image or access_token has changed, if yes - save, otherwise skip
-    lambda: ddb.put_session(session),
+    ddb.put_session(session)
 
     tokens = run_io_tasks_in_parallel([
       lambda: auth.sign_jwt({
