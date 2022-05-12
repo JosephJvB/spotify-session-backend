@@ -1,23 +1,12 @@
 import os
-from xmlrpc.client import Boolean
 import jwt
-import bcrypt
-from clients.helpers import now_ts
+from models.http import JWT
 
-from models.request import JWT, JWTData
 class AuthClient:
   def __init__(self):
       pass
 
-  def hash_password(self, password: str) -> tuple[str, str]:
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf8'), salt)
-    return salt.decode('utf8'), hashed.decode('utf8')
-
-  def check_password(self, password: str, hash: str) -> bool:
-    return bcrypt.checkpw(password.encode('utf8'), hash.encode('utf8'))
-
-  def sign_jwt(self, data: JWTData) -> str:
+  def sign_jwt(self, data: JWT) -> str:
     return jwt.encode({
       'data': data
     }, os.environ.get('JwtSecret'))

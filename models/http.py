@@ -1,3 +1,4 @@
+from typing import TypedDict
 from aws_lambda_typing import responses
 
 cors_headers = {
@@ -23,3 +24,9 @@ class HttpSuccess(HttpResponse):
 class HttpFailure(HttpResponse):
   def __init__(self, code: int = 500, body: str = ''):
       super().__init__(code, body)
+
+class JWTData(TypedDict):
+  expires: int
+  spotifyId: str
+class JWT(TypedDict):
+  data: JWTData
