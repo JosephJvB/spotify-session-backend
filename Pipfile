@@ -9,7 +9,6 @@ requests = "*"
 boto3-type-annotations = "*"
 pyjwt = "*"
 bcrypt = "*"
-uuid = "*"
 
 [dev-packages]
 boto3 = "*"
