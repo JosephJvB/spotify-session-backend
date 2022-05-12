@@ -8,7 +8,7 @@ from clients.auth import AuthClient
 from clients.ddb import DdbClient
 from clients.helpers import now_ts, run_io_tasks_in_parallel
 from models.documents import Session, User
-from models.request import JWT
+from models.request import SessionJWT
 from models.response import HttpFailure, HttpSuccess
 
 logger = logging.getLogger()
@@ -28,8 +28,9 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       m = 'Invalid request, missing token'
       logger.warn(m)
       return HttpFailure(400, m)
+
     
-    decoded: JWT = auth.decode_jwt(jwt)
+    decoded: SessionJWT = auth.decode_jwt(jwt)
     if not decoded or not decoded.get('data'):
       m = 'Invalid request, jwt invalid'
       logger.warn(m)
@@ -38,6 +39,10 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       m = 'Invalid request, jwt invalid. Missing sessionId'
       logger.warn(m)
       return HttpFailure(400, m)
+
+    if event['httpMethod'] == 'DELETE':
+      ddb.delete_session(decoded['data']['sessionId'])
+      return HttpSuccess()
 
     session: Session = ddb.get_session(decoded['data']['sessionId'])
     if not session:

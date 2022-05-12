@@ -139,6 +139,12 @@ Resources:
             Path: /session
             Method: get
             RestApiId: !Ref HttpApiGateway
+        DeleteSession:
+          Type: Api
+          Properties:
+            Path: /session
+            Method: delete
+            RestApiId: !Ref HttpApiGateway
         OptionsSession:
           Type: Api
           Properties:
