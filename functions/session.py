@@ -4,9 +4,10 @@ import traceback
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
 from clients.ddb import DdbClient
-from models.documents import Session
-from models.request import SessionJWT
-from models.response import HttpFailure, HttpSuccess
+from clients.helpers import now_ts
+from models.documents import Profile
+from models.request import JWT
+from models.http import HttpFailure, HttpSuccess
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -16,7 +17,6 @@ auth = AuthClient()
 def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> responses.APIGatewayProxyResponseV1:
   try:
     logger.info('method ' + event['httpMethod'])
-    logger.info('body ' + (event['body'] or '{}'))
     if event['httpMethod'] == 'OPTIONS':
       return HttpSuccess()
 
@@ -26,44 +26,43 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       logger.warn(m)
       return HttpFailure(400, m)
 
-    
-    decoded: SessionJWT = auth.decode_jwt(jwt)
+    decoded: JWT = auth.decode_jwt(jwt)
     if not decoded or not decoded.get('data'):
       m = 'Invalid request, jwt invalid'
       logger.warn(m)
       return HttpFailure(400, m)
-    if not decoded['data'].get('sessionId'):
+    if not decoded.get('sessionId'):
       m = 'Invalid request, jwt invalid. Missing sessionId'
       logger.warn(m)
       return HttpFailure(400, m)
+    if now_ts() > decoded.get('expires'):
+      m = 'Invalid request, jwt expired'
+      logger.warn(m)
+      return HttpFailure(400, m)
 
-    if event['httpMethod'] == 'DELETE':
-      ddb.delete_session(decoded['data']['sessionId'])
-      return HttpSuccess()
-
-    session: Session = ddb.get_session(decoded['data']['sessionId'])
-    if not session:
-      m = 'Invalid request, session not found with id ' + decoded['data']['sessionId']
+    profile: Profile = ddb.get_spotify_profile(decoded['spotifyId'])
+    if not profile:
+      m = 'Invalid request, profile not found with id ' + decoded['sessionId']
       logger.warn(m)
       return HttpFailure(400, m)
 
     ip = event['requestContext']['identity']['sourceIp']
     ua = event['requestContext']['identity']['userAgent']
-    if session['ipAddress'] != ip or session['userAgent'] != ua:
-      m = 'Invalid request, ip or user agent do not match session'
+    if profile['ipAddress'] != ip or profile['userAgent'] != ua:
+      m = 'Invalid request, ip or user agent do not match profile'
       logger.warn(m)
       return HttpFailure(400, m)
 
     jwt = auth.sign_jwt({
-      'spotifyId': session['spotifyId'],
+      'spotifyId': profile['spotifyId'],
     })
 
     return HttpSuccess(json.dumps({
       'message': 'ValidateJwt success',
       'token': jwt,
-      'spotifyId': session['spotifyId'],
-      'displayPicture': session['displayPicture'],
-      'displayName': session['displayName'],
+      'spotifyId': profile['spotifyId'],
+      'displayPicture': profile['displayPicture'],
+      'displayName': profile['displayName'],
     }))
 
   except Exception:
