@@ -69,8 +69,8 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       profile['displayPicture'] = img_urls[0]
 
     run_io_tasks_in_parallel([
-      lambda _ : ddb.put_user(user),
-      lambda _ : ddb.put_spotify_profile(profile),
+      lambda: ddb.put_user(user),
+      lambda: ddb.put_spotify_profile(profile),
     ])
     jwt = auth.sign_jwt({
       'email': user['email'],

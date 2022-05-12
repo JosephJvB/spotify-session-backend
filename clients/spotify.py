@@ -21,6 +21,7 @@ class SpotifyClient:
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': f'Basic {self.basic_auth}',
     })
+    r.raise_for_status()
     return r.json()
 
   def validate_token(self, token: SpotifyToken):
@@ -38,6 +39,7 @@ class SpotifyClient:
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': f'Basic {self.basic_auth}',
     })
+    r.raise_for_status()
     return r.json()
 
   def get_profile(self, token: SpotifyToken):
@@ -45,4 +47,5 @@ class SpotifyClient:
     r = requests.get('https://api.spotify.com/v1/me', headers ={
       'Authorization': f"Bearer {token['access_token']}"
     })
+    r.raise_for_status()
     return r.json()

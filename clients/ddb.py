@@ -1,3 +1,4 @@
+import logging
 import boto3
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from boto3_type_annotations.dynamodb import Client
@@ -21,7 +22,7 @@ class DdbClient():
     return self.to_object(r.get('Item'))
 
   def put_user(self, user: User):
-    return self.client.put_item(
+    self.client.put_item(
       TableName='JafMembers',
       Item=self.to_document(user)
     )
@@ -34,7 +35,7 @@ class DdbClient():
     return self.to_object(r.get('Item'))
 
   def put_spotify_profile(self, profile: Profile):
-    return self.client.put_item(
+    self.client.put_item(
       TableName='SpotifyProfile',
       Item=self.to_document(profile)
     )
