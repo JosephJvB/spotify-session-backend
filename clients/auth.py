@@ -1,14 +1,12 @@
 import os
-from xmlrpc.client import Boolean
 import jwt
-from clients.helpers import now_ts
+from models.http import JWT
 
-from models.request import JWT, JWTData
 class AuthClient:
   def __init__(self):
       pass
 
-  def sign_jwt(self, data: JWTData) -> str:
+  def sign_jwt(self, data: JWT) -> str:
     return jwt.encode({
       'data': data
     }, os.environ.get('JwtSecret'))

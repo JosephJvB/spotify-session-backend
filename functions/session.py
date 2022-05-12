@@ -6,8 +6,7 @@ from clients.auth import AuthClient
 from clients.ddb import DdbClient
 from clients.helpers import now_ts
 from models.documents import Profile
-from models.request import JWT
-from models.http import HttpFailure, HttpSuccess
+from models.http import JWT, HttpFailure, HttpSuccess
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -55,6 +54,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
 
     jwt = auth.sign_jwt({
       'spotifyId': profile['spotifyId'],
+      'expires': now_ts() + 1000 * 60 * 60 * 8,
     })
 
     return HttpSuccess(json.dumps({
