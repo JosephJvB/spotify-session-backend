@@ -152,6 +152,25 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  PfpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/pfp.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: JafSessions
+        - DynamoDBCrudPolicy:
+            TableName: SpotifyProfile
+        - S3CrudPolicy:
+            BucketName: jvb-media
+      Events:
+        DdbStream:
+          Type: DynamoDB
+          Properties:
+            Stream: arn:aws:dynamodb:ap-southeast-2:355151872526:table/JafSessions/stream/2022-05-12T19:37:18.888
+            MaximumRetryAttempts: 0
+
 Outputs:
   LoginFunction:
     Description: Python login function
@@ -161,6 +180,9 @@ Outputs:
     Value: !Ref RegisterFunction
   SessionFunction:
     Description: Python Session function
+    Value: !Ref SessionFunction
+  PfpFunction:
+    Description: Python Pfp function
     Value: !Ref SessionFunction
   HttpApiGateway:
     Description: Py Api Gateway

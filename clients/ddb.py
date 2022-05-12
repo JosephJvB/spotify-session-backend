@@ -1,10 +1,8 @@
-import logging
 import boto3
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from boto3_type_annotations.dynamodb import Client
 
 from models.documents import Profile, Session, User
-
 class DdbClient():
   client: Client
   td: TypeDeserializer
@@ -40,6 +38,15 @@ class DdbClient():
       Item=self.to_document(profile)
     )
 
+  def update_spotify_profile_pfp(self, id: str, url: str):
+    self.client.update_item(
+      TableName='SpotifyProfile',
+      Key={ 'spotifyId': { 'S': id } },
+      AttributeUpdates={
+        'displayPicture': { 'S': url }
+      }
+    )
+
   def get_session(self, id: str):
     r = self.client.get_item(
       TableName='JafSessions',
@@ -57,6 +64,15 @@ class DdbClient():
     self.client.put_item(
       TableName='JafSessions',
       Item=self.to_document(session)
+    )
+
+  def update_session_pfp(self, id: str, url: str):
+    self.client.update_item(
+      TableName='JafSessions',
+      Key={ 'sessionId': { 'S': id } },
+      AttributeUpdates={
+        'displayPicture': { 'S': url }
+      }
     )
 
   def to_document(self, obj: dict):

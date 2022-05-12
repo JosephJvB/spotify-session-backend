@@ -10,7 +10,6 @@ from clients.spotify import SpotifyClient
 from models.documents import Session, User, Profile
 from models.response import HttpFailure, HttpSuccess
 from models.request import LoginRequest
-from models.spotify import SpotifyProfileResponse, SpotifyToken
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

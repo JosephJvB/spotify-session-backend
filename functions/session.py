@@ -1,13 +1,10 @@
-from cProfile import Profile
-from ipaddress import ip_address
 import logging
 import json
 import traceback
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
 from clients.ddb import DdbClient
-from clients.helpers import now_ts, run_io_tasks_in_parallel
-from models.documents import Session, User
+from models.documents import Session
 from models.request import SessionJWT
 from models.response import HttpFailure, HttpSuccess
 
