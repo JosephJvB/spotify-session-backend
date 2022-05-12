@@ -3,7 +3,7 @@ import boto3
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from boto3_type_annotations.dynamodb import Client
 
-from models.documents import Profile, User
+from models.documents import Profile, Session, User
 
 class DdbClient():
   client: Client
@@ -38,6 +38,25 @@ class DdbClient():
     self.client.put_item(
       TableName='SpotifyProfile',
       Item=self.to_document(profile)
+    )
+
+  def get_session(self, id: str):
+    r = self.client.get_item(
+      TableName='JafSessions',
+      Key={ 'sessionId': { 'S': id } }
+    )
+    return self.to_object(r.get('Item'))
+
+  def delete_session(self, id: str):
+    self.client.delete_item(
+      TableName='JafSessions',
+      Key={ 'sessionId': { 'S': id } }
+    )
+
+  def put_session(self, session: Session):
+    self.client.put_item(
+      TableName='JafSessions',
+      Item=self.to_document(session)
     )
 
   def to_document(self, obj: dict):

@@ -78,6 +78,8 @@ Resources:
             TableName: JafMembers
         - DynamoDBCrudPolicy:
             TableName: SpotifyProfile
+        - DynamoDBCrudPolicy:
+            TableName: JafSessions
       Events:
         PostLogin:
           Type: Api
@@ -101,13 +103,13 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: SpotifyProfile
       Events:
-        PostLogin:
+        GetValidateJwt:
           Type: Api
           Properties:
             Path: /jwt
             Method: get
             RestApiId: !Ref HttpApiGateway
-        OptionsLogin:
+        OptionsValidateJwt:
           Type: Api
           Properties:
             Path: /jwt
@@ -120,6 +122,8 @@ Resources:
       CodeUri: .
       Handler: functions/register.handler
       Policies:
+      - DynamoDBCrudPolicy:
+            TableName: JafSessions
         - DynamoDBCrudPolicy:
             TableName: JafMembers
         - DynamoDBCrudPolicy:
@@ -138,6 +142,32 @@ Resources:
             Method: options
             RestApiId: !Ref HttpApiGateway
 
+  RememberMeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: functions/remember_me.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: JafSessions
+        - DynamoDBCrudPolicy:
+            TableName: JafMembers
+        - DynamoDBCrudPolicy:
+            TableName: SpotifyProfile
+      Events:
+        GetRememberMe:
+          Type: Api
+          Properties:
+            Path: /rememberme
+            Method: get
+            RestApiId: !Ref HttpApiGateway
+        OptionsRememberMe:
+          Type: Api
+          Properties:
+            Path: /rememberme
+            Method: options
+            RestApiId: !Ref HttpApiGateway
+
 Outputs:
   LoginFunction:
     Description: Python login function
@@ -148,6 +178,9 @@ Outputs:
   RegisterFunction:
     Description: Python Register function
     Value: !Ref RegisterFunction
+  RememberMeFunction:
+    Description: Python RememberMe function
+    Value: !Ref RememberMeFunction
   HttpApiGateway:
     Description: Py Api Gateway
     Value: !Ref HttpApiGateway

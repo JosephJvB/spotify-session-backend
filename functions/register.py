@@ -1,12 +1,13 @@
 import logging
 import json
 import traceback
+from uuid import uuid4
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
 from clients.ddb import DdbClient
 from clients.helpers import now_ts, run_io_tasks_in_parallel
 from clients.spotify import SpotifyClient
-from models.documents import User, Profile
+from models.documents import Session, User, Profile
 from models.response import HttpFailure, HttpSuccess
 from models.request import RegisterRequest
 from models.spotify import SpotifyProfileResponse, SpotifyToken
@@ -68,18 +69,35 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     if len(img_urls) > 0:
       profile['displayPicture'] = img_urls[0]
 
+    # todo: make persist session optional
+    session: Session = {}
+    session['sessionId'] = uuid4()
+    session['email'] = user['email']
+    session['spotifyId'] = profile['spotifyId']
+    session['ipAddress'] = event['requestContext']['identity']['sourceIp']
+    session['userAgent'] = event['requestContext']['identity']['userAgent']
+
     run_io_tasks_in_parallel([
       lambda: ddb.put_user(user),
       lambda: ddb.put_spotify_profile(profile),
+      lambda: ddb.put_session(session),
     ])
-    jwt = auth.sign_jwt({
-      'email': user['email'],
-      'spotifyId': user['spotifyId'],
-    })
+    tokens = run_io_tasks_in_parallel([
+      lambda: auth.sign_jwt({
+        'email': user['email'],
+        'spotifyId': user['spotifyId'],
+        'expires': now_ts() + 1000 * 60 * 60 * 8,
+      }),
+      lambda: auth.sign_jwt({
+        'sessionId': session['sessionId']
+      })
+    ])
+    jwt, rememberme = tokens
 
     return HttpSuccess(json.dumps({
       'message': 'Login success',
       'token': jwt,
+      'sessionToken': rememberme,
       'email': user['email'],
       'displayPicture': profile.get('displayPicture'),
       'displayName': profile.get('displayName'),

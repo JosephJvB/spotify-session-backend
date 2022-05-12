@@ -1,10 +1,13 @@
+from cProfile import Profile
+from ipaddress import ip_address
 import logging
 import json
 import traceback
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
 from clients.ddb import DdbClient
-from clients.helpers import now_ts
+from clients.helpers import now_ts, run_io_tasks_in_parallel
+from models.documents import Session, User
 from models.request import JWT
 from models.response import HttpFailure, HttpSuccess
 
@@ -31,22 +34,34 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       m = 'Invalid request, jwt invalid'
       logger.warn(m)
       return HttpFailure(400, m)
-    required = ['spotifyId', 'email', 'expires']
-    missing = [k for k in required if not decoded['data'].get(k)]
-    if len(missing) > 0:
-      m = 'Invalid request, jwt invalid. Missing properties ' + ', '.join(missing)
-      logger.warn(m)
-      return HttpFailure(400, m)
-    if decoded['data']['expires'] < now_ts():
-      m = 'Invalid request, jwt expired'
+    if not decoded['data'].get('sessionId'):
+      m = 'Invalid request, jwt invalid. Missing sessionId'
       logger.warn(m)
       return HttpFailure(400, m)
 
     # get display name and picture
-    profile = ddb.get_spotify_profile(decoded['data']['spotifyId'])
-    if not profile:
-      m = 'Invalid request, no spotify profile save with id ' + decoded['data']['spotifyId']
+    session: Session = ddb.get_session(decoded['data']['sessionId'])
+    if not session:
+      m = 'Invalid request, session not found with id ' + decoded['data']['sessionId']
       logger.warn(m)
+      return HttpFailure(400, m)
+
+    ip = event['requestContext']['identity']['sourceIp']
+    ua = event['requestContext']['identity']['userAgent']
+    if session['ip_address'] != ip or session['userAgent'] != ua:
+      m = 'Invalid request, ip or user agent do not match session'
+      logger.warn(m)
+      return HttpFailure(400, m)
+
+    results: list[User, Profile] = run_io_tasks_in_parallel([
+      lambda: ddb.get_user(session['email']),
+      lambda: ddb.get_spotify_profile(session['spotifyId']),
+    ])
+    user, profile = results
+    if not user or not profile:
+      m = 'Failed to find user or profile for session'
+      logger.warn(m)
+      ddb.delete_session(session['sessionId'])
       return HttpFailure(400, m)
     
     jwt = auth.sign_jwt({

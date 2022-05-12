@@ -16,3 +16,8 @@ class JWTData(TypedDict):
   expires: int
 class JWT(TypedDict):
   data: JWTData
+
+class SessionJWTData(TypedDict):
+  sessionId: str
+class SessionJWT(TypedDict):
+  data: SessionJWTData

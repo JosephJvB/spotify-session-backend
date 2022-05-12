@@ -19,10 +19,7 @@ class AuthClient:
 
   def sign_jwt(self, data: JWTData) -> str:
     return jwt.encode({
-      'data': {
-        **data,
-        'expires': now_ts() + 1000 * 60 * 60 * 8,
-      }
+      'data': data
     }, os.environ.get('JwtSecret'))
 
   def decode_jwt(self, token: str) -> JWT:

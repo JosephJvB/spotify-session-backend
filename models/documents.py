@@ -12,3 +12,10 @@ class Profile(TypedDict):
   tokenJson: str
   displayName: str
   displayPicture: str
+
+class Session(TypedDict):
+  sessionId: str
+  email: str
+  spotifyId: str
+  userAgent: str
+  ipAddress: str
