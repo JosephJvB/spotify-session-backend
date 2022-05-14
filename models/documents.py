@@ -7,4 +7,4 @@ class Profile(TypedDict):
   displayPicture: str
   userAgent: str
   ipAddress: str
-  lastLogin: int
+  lastLogin: str

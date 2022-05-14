@@ -39,7 +39,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
     profile['userAgent'] = event['requestContext']['identity']['userAgent']
     profile['displayName'] = spotify_profile['display_name']
     profile['displayPicture'] = next(i.get('url') for i in spotify_profile['images'] if i.get('url'))
-    profile['lastLogin'] = now_ts()
+    profile['lastLogin'] = str(now_ts())
     ddb.put_spotify_profile(profile)
 
     jwt = auth.sign_jwt({
