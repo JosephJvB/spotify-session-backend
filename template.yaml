@@ -83,6 +83,9 @@ Resources:
             Path: /login
             Method: get
             RestApiId: !Ref HttpApiGateway
+            RequestParameters:
+              - method.request.querystring.spotifyCode:
+                  Required: true
         OptionsLogin:
           Type: Api
           Properties:
@@ -105,6 +108,9 @@ Resources:
             Path: /session
             Method: get
             RestApiId: !Ref HttpApiGateway
+            RequestParameters:
+              - method.request.header.Authorization:
+                  Required: true
         OptionsSession:
           Type: Api
           Properties:
