@@ -30,21 +30,6 @@ Parameters:
     Default: https://jaf-unwrapped.com
     AllowedValues:
       - https://jaf-unwrapped.com
-  S3QuizBucket:
-    Type: String
-    Default: jaf-quiz
-    AllowedValues:
-      - jaf-quiz
-  S3QuizPrefix:
-    Type: String
-    Default: spotify-quiz
-    AllowedValues:
-      - spotify-quiz
-  S3QuizFile:
-    Type: String
-    Default: current.json
-    AllowedValues:
-      - current.json
 
 Globals:
   Function:
