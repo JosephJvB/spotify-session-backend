@@ -1,9 +1,9 @@
-from datetime import datetime
+import time
 from concurrent import futures
 from typing import Callable
 
 def now_ts() -> int:
-  return int(datetime.utcnow().timestamp()) * 1000
+  return int(time.time() * 1000)
 
 
 def run_io_tasks_in_parallel(tasks: list[Callable]) -> list:
