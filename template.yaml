@@ -49,11 +49,11 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: v1
-      # Domain:
-      #   DomainName: py.jaf-unwrapped.com
-      #   CertificateArn: arn:aws:acm:ap-southeast-2:355151872526:certificate/12c34da1-c039-4fc4-9636-05571fdb3df9
-      #   Route53:
-      #     HostedZoneId: Z05897963LYPVXX455E44
+      Domain:
+        DomainName: py.jaf-unwrapped.com
+        CertificateArn: arn:aws:acm:ap-southeast-2:355151872526:certificate/12c34da1-c039-4fc4-9636-05571fdb3df9
+        Route53:
+          HostedZoneId: Z05897963LYPVXX455E44
 
   LoginFunction:
     Type: AWS::Serverless::Function
