@@ -13,14 +13,14 @@ class SpotifyClient:
     auth_str = f"{os.environ.get('SpotifyClientId')}:{os.environ.get('SpotifyClientSecret')}"
     self.basic_auth = b64encode(auth_str.encode()).decode()
 
-  def submit_code(self, code: str) -> SpotifyToken:
+  def submit_code(self, code: str, redirect_uri: str) -> SpotifyToken:
     logger.info('SpotifyClient.submit_code()')
     logger.info('code ' + code)
     logger.info('basicAuth ' + self.basic_auth)
     r = requests.post('https://accounts.spotify.com/api/token', params={
         'code': code,
         'grant_type': 'authorization_code',
-        'redirect_uri': os.environ.get('SpotifyRedirectUri')
+        'redirect_uri': redirect_uri or os.environ.get('SpotifyRedirectUri')
     }, headers={
       'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': f'Basic {self.basic_auth}',

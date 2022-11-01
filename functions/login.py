@@ -1,5 +1,6 @@
 import logging
 import json
+import os
 import traceback
 from aws_lambda_typing import context as context_, events, responses
 from clients.auth import AuthClient
@@ -28,7 +29,9 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       logger.warn(m)
       return HttpFailure(400, m)
 
-    spotify_token: SpotifyTokenResponse = spotify.submit_code(code)
+
+    redirect_uri = event['queryStringParameters'].get('redirect_url_override')
+    spotify_token: SpotifyTokenResponse = spotify.submit_code(code, redirect_uri)
     spotify_token['ts'] = now_ts()
     spotify_profile: SpotifyProfileResponse = spotify.get_profile(spotify_token)
 
