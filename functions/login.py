@@ -30,7 +30,7 @@ def handler(event: events.APIGatewayProxyEventV1, context: context_.Context)-> r
       return HttpFailure(400, m)
 
 
-    redirect_uri = event['queryStringParameters'].get('redirect_url_override')
+    redirect_uri = event['queryStringParameters'].get('redirectUrlOverride')
     spotify_token: SpotifyTokenResponse = spotify.submit_code(code, redirect_uri)
     spotify_token['ts'] = now_ts()
     spotify_profile: SpotifyProfileResponse = spotify.get_profile(spotify_token)

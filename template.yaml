@@ -27,9 +27,9 @@ Parameters:
   # will update this as required
   SpotifyRedirectUri:
     Type: String
-    Default: https://www.jaf-unwrapped.com
-    AllowedValues:
-      - https://jaf-unwrapped.com
+    # Default: https://www.jaf-unwrapped.com
+    # AllowedValues:
+    #   - https://jaf-unwrapped.com
 
 Globals:
   Function:
