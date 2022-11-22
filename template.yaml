@@ -27,7 +27,7 @@ Parameters:
   # will update this as required
   SpotifyRedirectUri:
     Type: String
-    # Default: https://www.jaf-unwrapped.com
+    Default: https://www.jaf-unwrapped.com
     # AllowedValues:
     #   - https://jaf-unwrapped.com
 
@@ -51,7 +51,8 @@ Resources:
       StageName: v1
       Domain:
         DomainName: py-auth.jaf-unwrapped.com
-        CertificateArn: arn:aws:acm:ap-southeast-2:355151872526:certificate/12c34da1-c039-4fc4-9636-05571fdb3df9
+        # CertificateArn: arn:aws:acm:ap-southeast-2:355151872526:certificate/12c34da1-c039-4fc4-9636-05571fdb3df9
+        CertificateArn: arn:aws:acm:eu-west-2:355151872526:certificate/692a3b22-81bb-4c1c-a600-a1eac3cb32cb
         Route53:
           HostedZoneId: Z05897963LYPVXX455E44
 
