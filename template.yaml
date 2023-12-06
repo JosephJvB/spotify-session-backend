@@ -48,6 +48,10 @@ Resources:
   HttpApiGateway:
     Type: AWS::Serverless::Api
     Properties:
+      Cors:
+        AllowHeaders: "*"
+        AllowMethods: "*"
+        AllowOrigin: "*"
       StageName: v1
       # Domain:
       #   DomainName: py-auth.jaf-unwrapped.com
